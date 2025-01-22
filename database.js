@@ -1,46 +1,30 @@
-import sql from 'sequelize';
+import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-
 
 dotenv.config();
 
-console.log('Configuration de la base de données:', {
-    database: process.env.DB_NAME,
+// Construction de l'URI de connexion MongoDB
+const MONGODB_URI = `mongodb+srv://Nicolas:Gordon72@cluster0.adg0q.mongodb.net/nicolasbellina72`;
+
+console.log('Configuration de la base de données MongoDB:', {
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
-    dialect: 'mssql'
+    database: process.env.DB_NAME
 });
 
-const config = new sql.Sequelize(
-    process.env.DB_NAME,
-    process.env.DB_USER,
-    process.env.DB_PASSWORD,
-    {
-        host: process.env.DB_HOST,
-        dialect: 'mssql',
-        dialectOptions: {
-            options: {
-                encrypt: true, 
-                trustServerCertificate: true,
-            },
-        },
-        port: process.env.DB_PORT,
-        logging: true,
-        define: {
-            schema: 'dbo'
-        }
-    },
-);
+const connectDB = async () => {
+    try {
+        const options = {
+            useNewUrlParser: true,
+            useUnifiedTopology: true
+        };
 
-// Test de la connexion
-config.authenticate()
-    .then(async () => {
-        console.log('✅ Connexion à la base de données réussie.');
-    })
-    .catch(err => {
-        console.error('❌ Erreur de connexion:', err);
-    });
+        await mongoose.connect(MONGODB_URI, options);
+        console.log('✅ Connexion à MongoDB réussie.');
+    } catch (err) {
+        console.error('❌ Erreur de connexion MongoDB:', err);
+        process.exit(1);
+    }
+};
 
-    
-
-export default config;
+export default connectDB;

@@ -1,0 +1,50 @@
+[
+    {
+        "nom": "John Doe",
+        "email": "john@example.com",
+        "telephone": "0123456789",
+        "adresse": "123 rue de Paris"
+    },
+    {
+        "nom": "Jane Smith",
+        "email": "jane@example.com",
+        "telephone": "9876543210",
+        "adresse": "456 avenue des Champs-Élysées"
+    },
+    {
+        "nom": "Nicolas Bellina",
+        "email": "nicolasbellina72@gmail.com",
+        "telephone": "0606060606",
+        "adresse": "123 rue de Paris"
+    },
+    {
+        "nom": "Lorenzo Kennedy",
+        "email": "lorenzo@gmail.com",
+        "telephone": "09387927390",
+        "adresse": "123 rue de Paris"
+    },
+    {
+        "nom": "lisa",
+        "email": "lisa@example.com",
+        "telephone": "0123456789",
+        "adresse": "123 rue de Paris"
+    },
+    {
+        "nom": "laura",
+        "email": "laura@example.com",
+        "telephone": "0123456789",
+        "adresse": "123 rue de Paris"
+    }, 
+    {
+        "nom": "teddy",
+        "email": "teddy@example.com",
+        "telephone": "0123456789",
+        "adresse": "123 rue de Paris"
+    },
+    {
+        "nom": "nicolas",
+        "email": "nicolas@example.com",
+        "telephone": "0123456789",
+        "adresse": "123 rue de Paris"
+    }
+] 

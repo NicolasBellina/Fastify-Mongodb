@@ -30,9 +30,89 @@
 
     <!-- Contenu principal -->
     <main class="flex-shrink-0">
-        <!-- Contenu principal ici -->
         <div class="container mt-4">
-            <h1>Bienvenue sur le BOUTIQUE</h1>
+            <!-- Section des contacts -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h1>Liste des Contacts</h1>
+                        <div>
+                            <button id="reloadData" class="btn btn-primary">
+                                <i class="fas fa-sync-alt me-2"></i>
+                                Recharger les données
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <% if (locals.error) { %>
+                        <div class="alert alert-danger" role="alert">
+                            <%= error %>
+                        </div>
+                    <% } %>
+
+                    <% if (locals.contacts && contacts.length > 0) { %>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Nom</th>
+                                        <th>Email</th>
+                                        <th>Téléphone</th>
+                                        <th>Adresse</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% contacts.forEach(contact => { %>
+                                        <tr>
+                                            <td><%= contact.nom %></td>
+                                            <td><%= contact.email || '-' %></td>
+                                            <td><%= contact.telephone || '-' %></td>
+                                            <td><%= contact.adresse || '-' %></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary edit-contact" data-id="<%= contact._id %>">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-danger delete-contact" data-id="<%= contact._id %>">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    <% } else { %>
+                        <div class="alert alert-info" role="alert">
+                            Aucun contact trouvé.
+                        </div>
+                    <% } %>
+
+                    <!-- Formulaire d'ajout de contact -->
+                    <div class="mt-4">
+                        <h3>Ajouter un contact</h3>
+                        <form id="contactForm" class="needs-validation" novalidate>
+                            <div class="mb-3">
+                                <label for="nom" class="form-label">Nom*</label>
+                                <input type="text" class="form-control" id="nom" name="nom" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email">
+                            </div>
+                            <div class="mb-3">
+                                <label for="telephone" class="form-label">Téléphone</label>
+                                <input type="tel" class="form-control" id="telephone" name="telephone">
+                            </div>
+                            <div class="mb-3">
+                                <label for="adresse" class="form-label">Adresse</label>
+                                <input type="text" class="form-control" id="adresse" name="adresse">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Ajouter</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -41,7 +121,97 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-   
+    
+    <!-- Script pour gérer le formulaire -->
+    <script>
+        document.getElementById('contactForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                nom: document.getElementById('nom').value,
+                email: document.getElementById('email').value,
+                telephone: document.getElementById('telephone').value,
+                adresse: document.getElementById('adresse').value
+            };
+
+            try {
+                const response = await fetch('/graphql', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        query: `
+                            mutation CreateContact($input: ContactInput!) {
+                                createContact(input: $input) {
+                                    id
+                                    nom
+                                    email
+                                    telephone
+                                    adresse
+                                }
+                            }
+                        `,
+                        variables: {
+                            input: formData
+                        }
+                    })
+                });
+
+                const result = await response.json();
+                if (result.data) {
+                    // Recharger la page pour voir le nouveau contact
+                    window.location.reload();
+                } else {
+                    alert('Erreur lors de la création du contact');
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Erreur lors de la création du contact');
+            }
+        });
+
+        document.getElementById('reloadData').addEventListener('click', async () => {
+            try {
+                const button = document.getElementById('reloadData');
+                button.disabled = true;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Chargement...';
+
+                const response = await fetch('/graphql', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        query: `
+                            query {
+                                contacts {
+                                    id
+                                    nom
+                                    email
+                                    telephone
+                                    adresse
+                                }
+                            }
+                        `
+                    })
+                });
+
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    alert('Erreur lors du rechargement des données');
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Erreur lors du rechargement des données');
+            } finally {
+                const button = document.getElementById('reloadData');
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-sync-alt me-2"></i>Recharger les données';
+            }
+        });
+    </script>
 </body>
 </html>
 
